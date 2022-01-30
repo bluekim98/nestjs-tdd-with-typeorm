@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BookService } from '@src/book/service/book.service';
+import { Book } from '@src/database/entity/book.entity';
 import { StoreItem } from '@src/database/entity/store-item.entity';
 import { Store } from '@src/database/entity/store.entity';
 import { Repository } from 'typeorm';
+import { StoreItemService } from './store-item.service';
 
 export class CreateStoreDto {
     readonly name: string;
@@ -19,6 +21,7 @@ export class StoreService {
         @Inject('STORE_REPOSITORY')
         private readonly storeRepository: Repository<Store>,
         private readonly bookService: BookService,
+        private readonly storeItemService: StoreItemService,
     ) {}
 
     async createStore({ name }: CreateStoreDto): Promise<Store> {
@@ -36,18 +39,10 @@ export class StoreService {
         return await this.storeRepository.save(store);
     }
 
-    async registerBook(dto: RegisterBookDto) {
-        const store = await this.findById(dto.storeId);
-        if (!store) throw new Error('target store not exists');
-        const book = await this.bookService.findById(dto.bookId);
-        if (!book) throw new Error('not exists book');
-    }
-
-    private async throwIsNotValidToRegisterBook(dto: RegisterBookDto) {
-        const store = await this.findById(dto.storeId);
-        if (!store) throw new Error('target store not exists');
-        const book = await this.bookService.findById(dto.bookId);
-        if (!book) throw new Error('not exists book');
+    async registerBook({ storeId, bookId }: RegisterBookDto) {
+        const store = await this.findById(storeId);
+        const book = await this.bookService.findById(bookId);
+        return await this.storeItemService.createItem({ store, book });
     }
 
     async findByName(name: string): Promise<Store> {
@@ -58,7 +53,20 @@ export class StoreService {
         return await this.storeRepository.findOne({ id });
     }
 
-    async searchBooks(targetStoreId: number, keyword: string) {
+    async searchBooksInStore(
+        targetStoreId: number,
+        keyword: string,
+    ): Promise<Book[]> {
         const books = await this.bookService.findByKeyword(keyword);
+        if (!books.length) return [];
+
+        const storeItems = await this.storeItemService.findByBooksAndStore(
+            books,
+            targetStoreId,
+        );
+        const result = storeItems.map((storeItem) => {
+            return books.find((book) => book.id === storeItem.bookId);
+        });
+        return result;
     }
 }

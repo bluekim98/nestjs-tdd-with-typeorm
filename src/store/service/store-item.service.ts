@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Book } from '@src/database/entity/book.entity';
 import { StoreItem } from '@src/database/entity/store-item.entity';
 import { Store } from '@src/database/entity/store.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 export class CreateItemDto {
     readonly store: Store;
@@ -29,5 +29,16 @@ export class StoreItemService {
 
     private async create(entity: StoreItem): Promise<StoreItem> {
         return await this.storeItemRepository.save(entity);
+    }
+
+    async findByBooksAndStore(
+        books: Book[],
+        storeId: number,
+    ): Promise<StoreItem[]> {
+        const bookIds = books.map((book) => book.id);
+        return await this.storeItemRepository.find({
+            bookId: In(bookIds),
+            storeId,
+        });
     }
 }
