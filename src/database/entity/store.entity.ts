@@ -14,7 +14,7 @@ export class Store {
     @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
     id?: number;
 
-    @Column({ name: 'name', type: 'varchar' })
+    @Column({ name: 'name', type: 'varchar', unique: true })
     name: string;
 
     @CreateDateColumn({
