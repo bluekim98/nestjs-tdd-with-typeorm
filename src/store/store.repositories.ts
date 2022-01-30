@@ -1,4 +1,4 @@
-import { StoreWriterRelation } from '@src/database/entity/store-writer-relation.entity';
+import { StoreItem } from '@src/database/entity/store-item.entity';
 import { Store } from '@src/database/entity/store.entity';
 import { Connection } from 'typeorm';
 
@@ -9,9 +9,9 @@ export const storeRepositories = [
         inject: ['DATABASE_CONNECTION'],
     },
     {
-        provide: 'STORE_WRITER_RELATION_REPOSITORY',
+        provide: 'STORE_ITEM_REPOSITORY',
         useFactory: (connection: Connection) =>
-            connection.getRepository(StoreWriterRelation),
+            connection.getRepository(StoreItem),
         inject: ['DATABASE_CONNECTION'],
     },
 ];

@@ -7,7 +7,7 @@ import {
     JoinColumn,
     OneToMany,
 } from 'typeorm';
-import { StoreWriterRelation } from './store-writer-relation.entity';
+import { StoreItem } from './store-item.entity';
 
 @Entity({ name: 'store' })
 export class Store {
@@ -32,10 +32,7 @@ export class Store {
     })
     updatedAt?: Date;
 
-    @OneToMany(
-        () => StoreWriterRelation,
-        (storeWriterRelation) => storeWriterRelation.store,
-    )
+    @OneToMany(() => StoreItem, (storeItem) => storeItem.store)
     @JoinColumn({ name: 'id', referencedColumnName: 'storeId' })
-    storeWriterRelaions?: StoreWriterRelation[];
+    storeItems?: StoreItem[];
 }

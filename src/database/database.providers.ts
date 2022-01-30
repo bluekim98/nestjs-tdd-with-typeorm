@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { createConnection } from 'typeorm';
 import { Book } from './entity/book.entity';
-import { StoreWriterRelation } from './entity/store-writer-relation.entity';
+import { StoreItem } from './entity/store-item.entity';
 import { Store } from './entity/store.entity';
 import { Writer } from './entity/writer.entity';
 
@@ -22,9 +22,9 @@ export const databaseProviders = [
                 extra: {
                     connectionLimit: 1,
                 },
-                entities: [Book, Writer, Store, StoreWriterRelation],
+                entities: [Book, Writer, Store, StoreItem],
                 synchronize: true,
-                logging: ['query', 'error'],
+                logging: ['error'],
             }),
         inject: [ConfigService],
     },

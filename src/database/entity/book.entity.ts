@@ -6,7 +6,9 @@ import {
     UpdateDateColumn,
     JoinColumn,
     ManyToOne,
+    OneToMany,
 } from 'typeorm';
+import { StoreItem } from './store-item.entity';
 import { Writer } from './writer.entity';
 
 @Entity({ name: 'book' })
@@ -14,8 +16,8 @@ export class Book {
     @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
     id?: number;
 
-    @Column({ name: 'name', type: 'varchar' })
-    name: string;
+    @Column({ name: 'title', type: 'varchar' })
+    title: string;
 
     @Column({ name: 'writer_id', type: 'int' })
     writerId: number;
@@ -37,5 +39,9 @@ export class Book {
 
     @ManyToOne(() => Writer, (writer) => writer.books)
     @JoinColumn({ name: 'writer_id', referencedColumnName: 'id' })
-    writer: Writer;
+    writer?: Writer;
+
+    @OneToMany(() => StoreItem, (storeItem) => storeItem.book)
+    @JoinColumn({ name: 'id', referencedColumnName: 'bookId' })
+    storeItems?: StoreItem[];
 }
